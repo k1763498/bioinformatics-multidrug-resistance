@@ -34,7 +34,7 @@ To get number of proteins with each number of predicted TM helices:
 ```bash
 awk '$2==1' *editedphobius.txt | wc -l
 awk '$2==2' *editedphobius.txt | wc -l
-# Repeated for all values of column 2 (up to max number of predicted TM helices)
+# *Repeated for all values of column 2 (up to max number of predicted TM helices)*
 ```
 To get a list of the protein sequence IDs and their protein names (according to genome annotation): 
 ```bash
