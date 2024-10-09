@@ -84,19 +84,26 @@ makeblastdb -in DEG.aa -out DEG10 -parse_seqids -dbtype prot
 blastp -db DEG10 -query non_hom_proteins.fa -outfmt 6 -out non_hom_deg_results.txt -num_threads 4
 ```
 #### To check DEG Blastp results:
-•	awk -F"\t" '$3>35 && $11<1e-3' non_hom_deg_results* (for 9 matched species)
-•	awk -F "\t" '$3>35 && $11<1e-4 && $12>100' non_hom_deg_results.txt | awk -F "\t" '{print $1}' | sort | uniq | wc -l
-•	awk -F "\t" '$3>35 && $11<1e-4 && $12>100' non_hom_deg_results.txt | awk -F "\t" '{print $1}' | sort | uniq > unique_essential_proteins.txt
+```bash
+awk -F"\t" '$3>35 && $11<1e-3' non_hom_deg_results* (for 9 matched species)
+awk -F "\t" '$3>35 && $11<1e-4 && $12>100' non_hom_deg_results.txt | awk -F "\t" '{print $1}' | sort | uniq | wc -l
+awk -F "\t" '$3>35 && $11<1e-4 && $12>100' non_hom_deg_results.txt | awk -F "\t" '{print $1}' | sort | uniq > unique_essential_proteins.txt
+```
 #### To copy python script and GCF fa to next folder and edit python script to include name of proteins (e.g. 6-span-TMproteins_uniq.txt or i-i-6-span...etc):
-•	cp protein-sequences.ipynb GCF*_translated_cds.fa ../6-span-proteins/; cd ../6-span-proteins/; ls -l; atom protein-sequences.ipynb
+```bash
+cp protein-sequences.ipynb GCF*_translated_cds.fa ../6-span-proteins/; cd ../6-span-proteins/; ls -l; atom protein-sequences.ipynb
+```
 #### To get fasta sequences for sequence alignment:
-•	runipy protein-sequences.ipynb; mv header-sequence-pairs.txt ./6-span-proteins_uniq.fa
+```bash
+runipy protein-sequences.ipynb; mv header-sequence-pairs.txt ./6-span-proteins_uniq.fa
+```
 
-Protein Clusters
-•	cd-hit -i combined-unique_essential_proteins.fa -o combined-unique_essential_proteins_cdhit_0.6 -c 0.6 -n 4 -d 0 -g 1
-•	cd-hit -i combined-unique_essential_proteins.fa -o combined-unique_essential_proteins_cdhit_0.8 -c 0.8 -n 5 -d 0 -g 1
-•	cd-hit -i combined-unique_essential_proteins.fa -o combined-unique_essential_proteins_cdhit_0.9 -c 0.9 -n 5 -d 0 -g 1
-•	make_multi_seq combined-unique_essential_proteins.fa combined-unique_essential_proteins_cdhit_0.9.clstr multi-seq_0.9 5
-•	sed 's/^$/-|/g' clustrs_AN.txt
-•	csplit --digits=2 --quiet --prefix=outfile infile "/-|/+1" "{*}"
-
+# Protein Clusters
+```bash
+cd-hit -i combined-unique_essential_proteins.fa -o combined-unique_essential_proteins_cdhit_0.6 -c 0.6 -n 4 -d 0 -g 1
+cd-hit -i combined-unique_essential_proteins.fa -o combined-unique_essential_proteins_cdhit_0.8 -c 0.8 -n 5 -d 0 -g 1
+cd-hit -i combined-unique_essential_proteins.fa -o combined-unique_essential_proteins_cdhit_0.9 -c 0.9 -n 5 -d 0 -g 1
+make_multi_seq combined-unique_essential_proteins.fa combined-unique_essential_proteins_cdhit_0.9.clstr multi-seq_0.9 5
+sed 's/^$/-|/g' clustrs_AN.txt
+csplit --digits=2 --quiet --prefix=outfile infile "/-|/+1" "{*}"
+```
