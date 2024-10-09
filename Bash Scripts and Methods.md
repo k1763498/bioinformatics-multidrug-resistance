@@ -59,30 +59,37 @@ blastp -db blastdb -query Bacteria_Name_translated_cds_mps.fa -outfmt 6 -out Bac
 ```bash
 # For number of NO protein hits:
 grep -c "No hits" *_results.txt
+
 # For number of total protein hits:
 awk -F"\t" '{print $1}' *_results_parse.txt | sort | uniq | wc -l
+
 # To report how many homologous proteins and list homologous hits in text file:
 awk -F"\t" '$3>35 && $11<1e-3' *_results_parse.txt > homologous_hits.txt
 grep -f homologous_hits.txt *_results_parse.txt | awk -F"\t" '{print $1}' | sort | uniq | wc -l
+
 # To collect list of all the non-homologous proteins (incl. no hits):
 grep -v "$(awk -F"\t" '{print $1}' homologous_hits.txt | sort | uniq)" *TMproteins.txt | sort > non_hom_proteins.txt
+
 # For total number of non-homologous proteins (incl. no hits):
 echo "$(grep -v "$(awk -F"\t" '{print $1}' homologous_hits.txt)" *_results_parse.txt | awk -F"\t" '{print $1}' | sort | uniq | wc -l) + $(grep -c "No hit" *_results.txt)" | bc
 ```
 
 # Identification of essential human non-homologous membrane proteins
-
-To make essential gene local BLAST database from DEG amino acid sequences file:
-•	makeblastdb -in DEG.aa -out DEG10 -parse_seqids -dbtype prot
-To run local BLASTp search against Database of Essential Genes (DEG):
-•	blastp -db DEG10 -query non_hom_proteins.fa -outfmt 6 -out non_hom_deg_results.txt -num_threads 4
-To check DEG Blastp results:
+#### To make essential gene local BLAST database from DEG amino acid sequences file:
+```bash
+makeblastdb -in DEG.aa -out DEG10 -parse_seqids -dbtype prot
+```
+#### To run local BLASTp search against Database of Essential Genes (DEG):
+```bash
+blastp -db DEG10 -query non_hom_proteins.fa -outfmt 6 -out non_hom_deg_results.txt -num_threads 4
+```
+#### To check DEG Blastp results:
 •	awk -F"\t" '$3>35 && $11<1e-3' non_hom_deg_results* (for 9 matched species)
 •	awk -F "\t" '$3>35 && $11<1e-4 && $12>100' non_hom_deg_results.txt | awk -F "\t" '{print $1}' | sort | uniq | wc -l
 •	awk -F "\t" '$3>35 && $11<1e-4 && $12>100' non_hom_deg_results.txt | awk -F "\t" '{print $1}' | sort | uniq > unique_essential_proteins.txt
-To copy python script and GCF fa to next folder and edit python script to include name of proteins (e.g. 6-span-TMproteins_uniq.txt or i-i-6-span...etc):
+#### To copy python script and GCF fa to next folder and edit python script to include name of proteins (e.g. 6-span-TMproteins_uniq.txt or i-i-6-span...etc):
 •	cp protein-sequences.ipynb GCF*_translated_cds.fa ../6-span-proteins/; cd ../6-span-proteins/; ls -l; atom protein-sequences.ipynb
-To get fasta sequences for sequence alignment:
+#### To get fasta sequences for sequence alignment:
 •	runipy protein-sequences.ipynb; mv header-sequence-pairs.txt ./6-span-proteins_uniq.fa
 
 Protein Clusters
