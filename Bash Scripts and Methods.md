@@ -1,10 +1,10 @@
 ## Membrane protein identification & collection of their protein sequences
-##### To eliminate TM=0 & SP=Y & sort by no. of TM helices:
+#### To eliminate TM=0 & SP=Y & sort by no. of TM helices:
 ```bash
 awk '$2!==0 && $3!=="Y"' *phobiuspredict.txt > *editedphobius.txt
 sort -gk 2n -o *editedphobius.txt *editedphobius.txt
 ```
-##### To get list of accession numbers for membrane proteins in text file:
+#### To get list of accession numbers for membrane proteins in text file:
 ```bash
 awk -F"\ " '{print $1}' *editedphobius.txt > *TMproteins.txt
 ```
@@ -12,7 +12,7 @@ awk -F"\ " '{print $1}' *editedphobius.txt > *TMproteins.txt
 ```bash
 sed -i 's/lcl|//;s/SEQUENCE_ID//g' *TMproteins.txt; sed 1d *TMproteins.txt
 ```
-Make & run grep command to write list of sequence headers to parse in Python script to pair headers and sequences:
+#### Make & run grep command to write list of sequence headers to parse in Python script to pair headers and sequences:
 ```bash
 awk -v d="|" '{s=(NR==1?s:s d)$0}END{print s}' *TMproteins.txt > command.sh
 sed -i 's/|/\\|/g' command.sh; sed -i "s/.*/grep '&' *.fa/" command.sh
@@ -25,56 +25,52 @@ Python script `protein-sequences.ipynb` used to make a dictionary of the protein
 runipy protein-sequences.ipynb
 mv header-sequence-pairs.txt Bacteria_Name_translated_cds_mps.fa
 ```
-Check number of lines equal in both files (in case grep command selected multiple sequence headers for one sequence ID):
+#### Check number of lines equal in both files (in case grep command selected multiple sequence headers for one sequence ID):
 ```bash
 cat TM_AN_proteins.txt | wc -l; cat *TMproteins.txt | wc -l
 ```
-Transmembrane protein information (number of helices, protein names)
-To get number of proteins with each number of predicted TM helices:
+
+# Transmembrane protein information (number of helices, protein names)
+#### To get number of proteins with each number of predicted TM helices:
 ```bash
 awk '$2==1' *editedphobius.txt | wc -l
 awk '$2==2' *editedphobius.txt | wc -l
 # Repeated for all values of column 2 (up to max number of predicted TM helices)
 ```
-To get a list of the protein sequence IDs and their protein names (according to genome annotation): 
+#### To get a list of the protein sequence IDs and their protein names (according to genome annotation): 
 ```bash
 sed 's/ \[/;[/g' TM_AN_proteins.txt > list_of_proteins.txt
 names="$(awk -F";" '{print $1,$4}' list_of_proteins.txt | grep "protein=")"
 names2="$(awk -F";" '{print $1,$5}' list_of_proteins.txt | grep "protein=")"
 echo "$(echo -e "$names\n$names2" | sort -gk 1n)" > list_of_proteins.txt
 ```
-Identification of human non-homologous membrane proteins 
-To make human membrane proteome local BLAST database from membrane protein sequences fasta file:
+
+# Identification of human non-homologous membrane proteins 
+#### To make human membrane proteome local BLAST database from membrane protein sequences fasta file:
 ```bash
 makeblastdb -in GRCh38.p13_translated_cds_mps.fa -out blastdb -parse_seqids -dbtype prot
 ```
-To run local BLASTp search against human membrane proteome:
+#### To run local BLASTp search against human membrane proteome:
 ```bash
 blastp -db blastdb -query Bacteria_Name_translated_cds_mps.fa -outfmt 0 -out Bacteria_name_results.txt -num_threads 4
 blastp -db blastdb -query Bacteria_Name_translated_cds_mps.fa -outfmt 6 -out Bacteria_name_results_parse.txt -num_threads 4
 ```
-To filter BLASTp search results by E Value (>0.001) & Percent Identity (<35%):
+#### To filter BLASTp search results by E Value (>0.001) & Percent Identity (<35%):
 ```bash
 # For number of NO protein hits:
 grep -c "No hits" *_results.txt
 # For number of total protein hits:
 awk -F"\t" '{print $1}' *_results_parse.txt | sort | uniq | wc -l
-```
-To report how many homologous proteins and list homologous hits in text file:
-```bash
+# To report how many homologous proteins and list homologous hits in text file:
 awk -F"\t" '$3>35 && $11<1e-3' *_results_parse.txt > homologous_hits.txt
 grep -f homologous_hits.txt *_results_parse.txt | awk -F"\t" '{print $1}' | sort | uniq | wc -l
-```
-To collect list of all the non-homologous proteins (incl. no hits):
-```bash
+# To collect list of all the non-homologous proteins (incl. no hits):
 grep -v "$(awk -F"\t" '{print $1}' homologous_hits.txt | sort | uniq)" *TMproteins.txt | sort > non_hom_proteins.txt
-```
-For total number of non-homologous proteins (incl. no hits):
-```bash
+# For total number of non-homologous proteins (incl. no hits):
 echo "$(grep -v "$(awk -F"\t" '{print $1}' homologous_hits.txt)" *_results_parse.txt | awk -F"\t" '{print $1}' | sort | uniq | wc -l) + $(grep -c "No hit" *_results.txt)" | bc
 ```
 
-Identification of essential human non-homologous membrane proteins
+# Identification of essential human non-homologous membrane proteins
 
 To make essential gene local BLAST database from DEG amino acid sequences file:
 •	makeblastdb -in DEG.aa -out DEG10 -parse_seqids -dbtype prot
