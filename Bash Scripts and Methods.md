@@ -19,9 +19,13 @@ sed -i 's/|/\\|/g' command.sh; sed -i "s/.*/grep '&' *.fa/" command.sh
 chmod +x command.sh
 ./command.sh > TM_AN_proteins.txt
 ```
-Python script used to make a dictionary of the protein sequences, and create a text file header-sequence-pairs.txt using the list of sequence headers containing only the sequences of membrane proteins.
-This was initially opened with Jupyter notebooks, input filenames edited and run in the browser before using Atom text editor to edit input filenames and the command runipy was used (with Miniconda installed in Linux Terminal):
-•	runipy protein-sequences.ipynb
-•	mv header-sequence-pairs.txt Bacteria_Name_translated_cds_mps.fa
+Python script `protein-sequences.ipynb` used to make a dictionary of the protein sequences, and create a text file header-sequence-pairs.txt using the list of sequence headers containing only the sequences of membrane proteins.
+*This was initially opened with Jupyter notebooks, input filenames edited and run in the browser before using Atom text editor to edit input filenames and the command runipy was used (with Miniconda installed in Linux Terminal):*
+```bash
+runipy protein-sequences.ipynb
+mv header-sequence-pairs.txt Bacteria_Name_translated_cds_mps.fa
+```
 Check number of lines equal in both files (in case grep command selected multiple sequence headers for one sequence ID):
-•	cat TM_AN_proteins.txt | wc -l; cat *TMproteins.txt | wc -l
+```bash
+cat TM_AN_proteins.txt | wc -l; cat *TMproteins.txt | wc -l
+```
