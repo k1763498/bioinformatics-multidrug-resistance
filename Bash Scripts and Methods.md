@@ -31,21 +31,28 @@ cat TM_AN_proteins.txt | wc -l; cat *TMproteins.txt | wc -l
 ```
 Transmembrane protein information (number of helices, protein names)
 To get number of proteins with each number of predicted TM helices:
-•	awk '$2==1' *editedphobius.txt | wc -l
-•	awk '$2==2' *editedphobius.txt | wc -l
-•	Repeated for all values of column 2 (up to max number of predicted TM helices)
+```bash
+awk '$2==1' *editedphobius.txt | wc -l
+awk '$2==2' *editedphobius.txt | wc -l
+# Repeated for all values of column 2 (up to max number of predicted TM helices)
+```
 To get a list of the protein sequence IDs and their protein names (according to genome annotation): 
-•	sed 's/ \[/;[/g' TM_AN_proteins.txt > list_of_proteins.txt
-•	names="$(awk -F";" '{print $1,$4}' list_of_proteins.txt | grep "protein=")"
-•	names2="$(awk -F";" '{print $1,$5}' list_of_proteins.txt | grep "protein=")"
-•	echo "$(echo -e "$names\n$names2" | sort -gk 1n)" > list_of_proteins.txt
-
+```bash
+sed 's/ \[/;[/g' TM_AN_proteins.txt > list_of_proteins.txt
+names="$(awk -F";" '{print $1,$4}' list_of_proteins.txt | grep "protein=")"
+names2="$(awk -F";" '{print $1,$5}' list_of_proteins.txt | grep "protein=")"
+echo "$(echo -e "$names\n$names2" | sort -gk 1n)" > list_of_proteins.txt
+```
 Identification of human non-homologous membrane proteins 
 To make human membrane proteome local BLAST database from membrane protein sequences fasta file:
-•	makeblastdb -in GRCh38.p13_translated_cds_mps.fa -out blastdb -parse_seqids -dbtype prot
+```bash
+makeblastdb -in GRCh38.p13_translated_cds_mps.fa -out blastdb -parse_seqids -dbtype prot
+```
 To run local BLASTp search against human membrane proteome:
-•	blastp -db blastdb -query Bacteria_Name_translated_cds_mps.fa -outfmt 0 -out Bacteria_name_results.txt -num_threads 4
-•	blastp -db blastdb -query Bacteria_Name_translated_cds_mps.fa -outfmt 6 -out Bacteria_name_results_parse.txt -num_threads 4
+```bash
+blastp -db blastdb -query Bacteria_Name_translated_cds_mps.fa -outfmt 0 -out Bacteria_name_results.txt -num_threads 4
+blastp -db blastdb -query Bacteria_Name_translated_cds_mps.fa -outfmt 6 -out Bacteria_name_results_parse.txt -num_threads 4
+```
 To filter BLASTp search results by E Value (>0.001) & Percent Identity (<35%):
 For number of NO protein hits:
 •	grep -c "No hits" *_results.txt
